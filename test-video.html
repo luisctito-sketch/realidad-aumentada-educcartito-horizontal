@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba de video Educcartito Horizontal</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .caja { max-width: 760px; }
+    video {
+      width: min(94vw, 720px);
+      border-radius: 18px;
+      background: black;
+    }
+  </style>
+</head>
+<body>
+  <div class="caja">
+    <h1>Prueba del video horizontal</h1>
+    <p>Si aquí se ve Educcartito bailando, el MP4 está correctamente subido.</p>
+    <video src="./educcartito-bailando.mp4" controls playsinline></video>
+  </div>
+</body>
+</html>

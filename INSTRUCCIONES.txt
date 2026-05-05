@@ -1,0 +1,49 @@
+REALIDAD AUMENTADA EDUCCARTITO HORIZONTAL
+
+Repositorio recomendado:
+realidad-aumentada-educcartito-horizontal
+
+URL esperada:
+https://luisctito-sketch.github.io/realidad-aumentada-educcartito-horizontal/
+
+Archivos obligatorios en la raíz del repositorio:
+index.html
+targets.mind
+educcartito-bailando.mp4
+.nojekyll
+
+Pasos:
+
+1. Crea un repositorio nuevo en GitHub:
+   realidad-aumentada-educcartito-horizontal
+
+2. Descomprime este ZIP.
+
+3. Copia dentro de esa carpeta tu archivo:
+   targets.mind
+
+4. Sube a GitHub todos los archivos que están dentro de la carpeta, especialmente:
+   index.html
+   targets.mind
+   educcartito-bailando.mp4
+   test-video.html
+   .nojekyll
+
+5. Activa GitHub Pages:
+   Settings > Pages > Deploy from a branch > main > /root > Save
+
+6. Primero prueba el video:
+   https://luisctito-sketch.github.io/realidad-aumentada-educcartito-horizontal/test-video.html
+
+7. Luego prueba la realidad aumentada:
+   https://luisctito-sketch.github.io/realidad-aumentada-educcartito-horizontal/
+
+8. En el celular:
+   - Presiona Iniciar experiencia AR.
+   - Acepta la cámara.
+   - Apunta a la tarjeta de Educcartito.
+   - Si hace falta, toca Activar sonido.
+
+Muy importante:
+- targets.mind debe estar generado con la misma imagen marcador que vas a poner en el cuaderno.
+- El video debe llamarse exactamente educcartito-bailando.mp4.

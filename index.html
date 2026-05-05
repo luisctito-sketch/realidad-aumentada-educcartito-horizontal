@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <title>Educcartito STEAMLab RA Horizontal</title>
+
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .a-enter-vr,
+    .a-enter-ar,
+    .a-enter-vr-button,
+    .a-enter-ar-button,
+    .a-orientation-modal {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    #inicio {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: radial-gradient(circle at top, #1d3cff 0%, #08122c 48%, #000000 100%);
+      color: white;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    #cajaInicio {
+      width: min(92vw, 480px);
+      padding: 28px 22px;
+      border-radius: 28px;
+      background: rgba(0,0,0,0.52);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+    }
+
+    #cajaInicio h1 {
+      margin: 0 0 12px 0;
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    #cajaInicio p {
+      margin: 10px 0;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .boton {
+      margin-top: 18px;
+      padding: 15px 22px;
+      border: none;
+      border-radius: 999px;
+      background: #ffeb3b;
+      color: #111;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 7px 18px rgba(0,0,0,0.36);
+    }
+
+    #sonido {
+      position: fixed;
+      z-index: 9998;
+      top: 18px;
+      right: 18px;
+      display: none;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 999px;
+      background: #ffeb3b;
+      color: #111;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 7px 18px rgba(0,0,0,0.36);
+    }
+
+    #mensaje {
+      position: fixed;
+      z-index: 9997;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      width: min(92vw, 560px);
+      padding: 12px 16px;
+      border-radius: 18px;
+      background: rgba(0,0,0,0.72);
+      color: white;
+      font-size: 17px;
+      line-height: 1.35;
+      text-align: center;
+      box-sizing: border-box;
+    }
+  </style>
+
+  <script>
+    /*
+      VERSIÓN HORIZONTAL SIMPLE Y LIMPIA
+
+      Archivos obligatorios:
+      index.html
+      targets.mind
+      educcartito-bailando.mp4
+
+      Video horizontal 16:9.
+      Tamaño actual en AR:
+      width="2.20"
+      height="1.24"
+
+      Si se ve demasiado grande:
+      width="1.90"
+      height="1.07"
+
+      Si se ve pequeño:
+      width="2.45"
+      height="1.38"
+    */
+
+    AFRAME.registerComponent("educcartito-ra-horizontal", {
+      init: function () {
+        const video = document.querySelector("#videoEduccartito");
+        const panelVideo = document.querySelector("#panelVideo");
+        const mensaje = document.querySelector("#mensaje");
+
+        const actualizarTextura = () => {
+          panelVideo.setAttribute("material", "shader: flat; src: #videoEduccartito; side: double; transparent: false; opacity: 1;");
+          panelVideo.setAttribute("visible", "true");
+        };
+
+        video.addEventListener("loadeddata", actualizarTextura);
+        video.addEventListener("canplay", actualizarTextura);
+        video.addEventListener("playing", actualizarTextura);
+
+        this.el.addEventListener("targetFound", async () => {
+          actualizarTextura();
+          mensaje.innerHTML = "¡Educcartito apareció!<br>Baila, aprende y descubre patrones.";
+
+          try {
+            video.currentTime = 0;
+            video.muted = false;
+            await video.play();
+            actualizarTextura();
+          } catch (error) {
+            mensaje.innerHTML = "Educcartito apareció.<br>Toca el botón “Activar sonido”.";
+          }
+        });
+
+        this.el.addEventListener("targetLost", () => {
+          video.pause();
+          panelVideo.setAttribute("visible", "false");
+          mensaje.innerHTML = "Busca nuevamente la tarjeta de Educcartito.";
+        });
+      }
+    });
+
+    window.addEventListener("load", () => {
+      const inicio = document.querySelector("#inicio");
+      const botonInicio = document.querySelector("#botonInicio");
+      const botonSonido = document.querySelector("#sonido");
+      const mensaje = document.querySelector("#mensaje");
+      const video = document.querySelector("#videoEduccartito");
+      const panelVideo = document.querySelector("#panelVideo");
+
+      const actualizarTextura = () => {
+        panelVideo.setAttribute("material", "shader: flat; src: #videoEduccartito; side: double; transparent: false; opacity: 1;");
+      };
+
+      video.addEventListener("error", () => {
+        mensaje.innerHTML = "No se cargó el video.<br>Revisa que el archivo se llame educcartito-bailando.mp4.";
+      });
+
+      botonInicio.addEventListener("click", async () => {
+        inicio.style.display = "none";
+        botonSonido.style.display = "block";
+        mensaje.innerHTML = "Acepta la cámara y apunta hacia la tarjeta de Educcartito.";
+
+        try {
+          video.muted = true;
+          video.load();
+          await video.play();
+          actualizarTextura();
+          video.pause();
+          video.currentTime = 0;
+          video.muted = false;
+        } catch (e) {
+          console.log("El video se activará al detectar la imagen.");
+        }
+      });
+
+      botonSonido.addEventListener("click", async () => {
+        try {
+          video.muted = false;
+          actualizarTextura();
+          await video.play();
+          mensaje.innerHTML = "Sonido activado.<br>Ahora apunta hacia la tarjeta de Educcartito.";
+        } catch (e) {
+          mensaje.innerHTML = "Toca nuevamente el botón o revisa el permiso del navegador.";
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+
+  <div id="inicio">
+    <div id="cajaInicio">
+      <h1>Educcartito cobra vida</h1>
+      <p>Experiencia de Realidad Aumentada STEAMLab.</p>
+      <p>Presiona el botón, acepta el permiso de cámara y apunta hacia la tarjeta de Educcartito.</p>
+      <button id="botonInicio" class="boton">Iniciar experiencia AR</button>
+    </div>
+  </div>
+
+  <button id="sonido">Activar sonido</button>
+
+  <div id="mensaje">Preparando la experiencia de realidad aumentada...</div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: yes; uiLoading: yes; uiError: yes;"
+    embedded
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: false; alpha: true; antialias: true;"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets timeout="30000">
+      <video
+        id="videoEduccartito"
+        src="./educcartito-bailando.mp4"
+        preload="auto"
+        loop
+        muted
+        playsinline
+        webkit-playsinline>
+      </video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity mindar-image-target="targetIndex: 0" educcartito-ra-horizontal>
+
+      <a-plane
+        id="panelVideo"
+        position="0 0 0.13"
+        rotation="0 0 0"
+        width="2.20"
+        height="1.24"
+        visible="false"
+        material="shader: flat; src: #videoEduccartito; side: double; transparent: false; opacity: 1;">
+      </a-plane>
+
+    </a-entity>
+
+  </a-scene>
+
+</body>
+</html>

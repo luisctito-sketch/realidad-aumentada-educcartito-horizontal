@@ -1,0 +1,14 @@
+IMPORTANTE
+
+Debes copiar aquí tu archivo targets.mind.
+
+Ese archivo es obligatorio para que MindAR reconozca la tarjeta de Educcartito.
+
+Al final, en GitHub deben estar juntos estos tres archivos principales:
+
+index.html
+targets.mind
+educcartito-bailando.mp4
+
+El video ya está preparado y se llama exactamente:
+educcartito-bailando.mp4
