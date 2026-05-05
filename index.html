@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
-  <title>Educcartito STEAMLab RA Horizontal</title>
+  <title>Educcartito STEAMLab RA - Fullscreen</title>
 
-  <!-- A-Frame + MindAR -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
@@ -19,18 +18,6 @@
       overflow: hidden;
       background: #000;
       font-family: Arial, Helvetica, sans-serif;
-    }
-
-    /* Fuerza la escena AR a ocupar toda la pantalla del celular */
-    a-scene,
-    a-scene canvas,
-    .a-canvas {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      z-index: 1 !important;
     }
 
     .a-enter-vr,
@@ -47,12 +34,12 @@
     #inicio {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      z-index: 999999;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      background: radial-gradient(circle at top, #1d3cff 0%, #08122c 48%, #000000 100%);
+      background: radial-gradient(circle at top, #263cff 0%, #07122d 45%, #000 100%);
       color: white;
       padding: 24px;
       box-sizing: border-box;
@@ -62,8 +49,8 @@
       width: min(92vw, 480px);
       padding: 28px 22px;
       border-radius: 28px;
-      background: rgba(0,0,0,0.52);
-      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.24);
       box-shadow: 0 14px 36px rgba(0,0,0,0.45);
     }
 
@@ -79,6 +66,12 @@
       line-height: 1.45;
     }
 
+    #version {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #ffeb3b;
+    }
+
     .boton {
       margin-top: 18px;
       padding: 15px 22px;
@@ -92,33 +85,16 @@
       box-shadow: 0 7px 18px rgba(0,0,0,0.36);
     }
 
-    #sonido {
-      position: fixed;
-      z-index: 9998;
-      top: 18px;
-      right: 18px;
-      display: none;
-      padding: 12px 18px;
-      border: none;
-      border-radius: 999px;
-      background: #ffeb3b;
-      color: #111;
-      font-size: 16px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 7px 18px rgba(0,0,0,0.36);
-    }
-
     #mensaje {
       position: fixed;
-      z-index: 9997;
+      z-index: 999997;
       left: 50%;
       bottom: 24px;
       transform: translateX(-50%);
       width: min(92vw, 600px);
       padding: 12px 16px;
       border-radius: 18px;
-      background: rgba(0,0,0,0.72);
+      background: rgba(0,0,0,0.76);
       color: white;
       font-size: 17px;
       line-height: 1.35;
@@ -127,79 +103,110 @@
     }
 
     /*
-      Video como capa HTML.
-      Esta versión evita el problema de “se oye, pero no se ve”,
-      porque NO usa el video como textura de A-Frame.
+      Pantalla final del video.
+      Esta pantalla tapa completamente la cámara y el canvas de AR.
+      Así evitamos el problema de “se escucha, pero no se ve”.
     */
-    #capaVideo {
+    #pantallaVideo {
       position: fixed;
-      z-index: 9996;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: min(94vw, 760px);
+      inset: 0;
+      z-index: 2147483000;
       display: none;
-      padding: 8px;
-      border-radius: 22px;
-      background: rgba(0,0,0,0.88);
-      box-shadow: 0 18px 45px rgba(0,0,0,0.65);
+      background: #000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 14px;
       box-sizing: border-box;
     }
 
     #videoEduccartito {
-      display: block;
-      width: 100%;
+      width: min(96vw, 960px);
+      max-height: 72vh;
       height: auto;
-      border-radius: 16px;
-      background: black;
+      display: block;
+      background: #000;
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.8);
     }
 
-    #etiquetaVideo {
+    #textoVideo {
       color: white;
-      font-size: 14px;
-      line-height: 1.25;
       text-align: center;
-      padding: 8px 6px 2px 6px;
+      font-size: 18px;
+      line-height: 1.35;
+      margin-top: 14px;
+      padding: 0 10px;
+    }
+
+    #barraBotones {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .botonVideo {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 999px;
+      background: #ffeb3b;
+      color: #111;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    #escenaAR {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 1 !important;
     }
   </style>
 
   <script>
     /*
-      VERSIÓN ESTABLE HORIZONTAL
+      EDUCCARTITO AR - VERSIÓN FULLSCREEN V3
 
-      Archivos obligatorios:
+      Esta versión NO usa el video como textura WebGL.
+      MindAR solo reconoce la tarjeta.
+      Cuando la reconoce, se oculta la cámara y se muestra el video grande en pantalla negra.
+
+      Archivos necesarios:
       - index.html
       - targets.mind
       - educcartito-bailando.mp4
-
-      Esta versión usa MindAR solo para reconocer la imagen.
-      Cuando reconoce la tarjeta, muestra el video como capa HTML grande.
-      Es mucho más estable en celulares porque evita fallas de textura WebGL.
     */
 
     AFRAME.registerComponent("detector-educcartito", {
       init: function () {
-        const video = document.querySelector("#videoEduccartito");
-        const capaVideo = document.querySelector("#capaVideo");
+        const escenaAR = document.querySelector("#escenaAR");
         const mensaje = document.querySelector("#mensaje");
+        const pantallaVideo = document.querySelector("#pantallaVideo");
+        const video = document.querySelector("#videoEduccartito");
 
         this.el.addEventListener("targetFound", async () => {
-          capaVideo.style.display = "block";
-          mensaje.innerHTML = "¡Educcartito apareció!<br>Baila, aprende y descubre patrones.";
+          mensaje.style.display = "none";
+          pantallaVideo.style.display = "flex";
+
+          /*
+            Ocultamos la escena AR para que no tape el video.
+            Esto soluciona el problema de pantalla negra con audio.
+          */
+          escenaAR.style.display = "none";
 
           try {
             video.currentTime = 0;
             video.muted = false;
             await video.play();
           } catch (error) {
-            mensaje.innerHTML = "Educcartito apareció.<br>Toca “Activar sonido” para iniciar el baile.";
+            video.muted = true;
+            await video.play();
           }
-        });
-
-        this.el.addEventListener("targetLost", () => {
-          video.pause();
-          capaVideo.style.display = "none";
-          mensaje.innerHTML = "Busca nuevamente la tarjeta de Educcartito.";
         });
       }
     });
@@ -207,16 +214,21 @@
     window.addEventListener("load", () => {
       const inicio = document.querySelector("#inicio");
       const botonInicio = document.querySelector("#botonInicio");
-      const botonSonido = document.querySelector("#sonido");
+      const botonReproducir = document.querySelector("#botonReproducir");
+      const botonVolver = document.querySelector("#botonVolver");
+      const escenaAR = document.querySelector("#escenaAR");
       const mensaje = document.querySelector("#mensaje");
+      const pantallaVideo = document.querySelector("#pantallaVideo");
       const video = document.querySelector("#videoEduccartito");
-      const capaVideo = document.querySelector("#capaVideo");
 
       botonInicio.addEventListener("click", async () => {
         inicio.style.display = "none";
-        botonSonido.style.display = "block";
         mensaje.innerHTML = "Acepta la cámara y apunta hacia la tarjeta de Educcartito.";
 
+        /*
+          Desbloqueo inicial del video en Android/iPhone.
+          Lo reproducimos en silencio un instante y lo pausamos.
+        */
         try {
           video.muted = true;
           video.load();
@@ -225,23 +237,30 @@
           video.currentTime = 0;
           video.muted = false;
         } catch (e) {
-          console.log("El video se activará al detectar la imagen.");
+          console.log("El video se activará cuando se detecte la tarjeta.");
         }
       });
 
-      botonSonido.addEventListener("click", async () => {
+      botonReproducir.addEventListener("click", async () => {
         try {
-          capaVideo.style.display = "block";
           video.muted = false;
           await video.play();
-          mensaje.innerHTML = "Sonido activado.<br>Apunta hacia la tarjeta de Educcartito.";
         } catch (e) {
-          mensaje.innerHTML = "Toca nuevamente el botón o revisa el permiso del navegador.";
+          video.muted = true;
+          await video.play();
         }
+      });
+
+      botonVolver.addEventListener("click", () => {
+        video.pause();
+        pantallaVideo.style.display = "none";
+        escenaAR.style.display = "block";
+        mensaje.style.display = "block";
+        mensaje.innerHTML = "Apunta nuevamente hacia la tarjeta de Educcartito.";
       });
 
       video.addEventListener("error", () => {
-        mensaje.innerHTML = "No se cargó el video.<br>Revisa que el archivo se llame exactamente educcartito-bailando.mp4.";
+        alert("No se pudo cargar el video. Revisa que el archivo se llame exactamente educcartito-bailando.mp4.");
       });
     });
   </script>
@@ -253,31 +272,38 @@
     <div id="cajaInicio">
       <h1>Educcartito cobra vida</h1>
       <p>Experiencia de Realidad Aumentada STEAMLab.</p>
-      <p>Presiona el botón, acepta el permiso de cámara y apunta hacia la tarjeta de Educcartito.</p>
+      <p>Presiona el botón, acepta la cámara y apunta hacia la tarjeta de Educcartito.</p>
       <button id="botonInicio" class="boton">Iniciar experiencia AR</button>
+      <div id="version">Versión Fullscreen V3</div>
     </div>
   </div>
 
-  <button id="sonido">Activar sonido</button>
-
   <div id="mensaje">Preparando la experiencia de realidad aumentada...</div>
 
-  <!-- Video visible como capa HTML, horizontal y grande -->
-  <div id="capaVideo">
+  <div id="pantallaVideo">
     <video
       id="videoEduccartito"
       src="./educcartito-bailando.mp4"
       preload="auto"
       loop
-      muted
+      controls
       playsinline
       webkit-playsinline>
     </video>
-    <div id="etiquetaVideo">Educcartito STEAMLab en Realidad Aumentada</div>
+
+    <div id="textoVideo">
+      ¡Educcartito apareció!<br>
+      Baila, aprende y descubre patrones.
+    </div>
+
+    <div id="barraBotones">
+      <button id="botonReproducir" class="botonVideo">Reproducir / sonido</button>
+      <button id="botonVolver" class="botonVideo">Volver a escanear</button>
+    </div>
   </div>
 
-  <!-- Escena MindAR solo para detectar la imagen marcador -->
   <a-scene
+    id="escenaAR"
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: yes; uiLoading: yes; uiError: yes;"
     color-space="sRGB"
     renderer="colorManagement: true; physicallyCorrectLights: false; alpha: true; antialias: true;"
@@ -287,13 +313,7 @@
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <a-entity mindar-image-target="targetIndex: 0" detector-educcartito>
-      <!-- Objeto invisible. Solo sirve para activar targetFound y targetLost. -->
-      <a-plane
-        position="0 0 0"
-        width="0.01"
-        height="0.01"
-        visible="false">
-      </a-plane>
+      <a-plane position="0 0 0" width="0.01" height="0.01" visible="false"></a-plane>
     </a-entity>
 
   </a-scene>
