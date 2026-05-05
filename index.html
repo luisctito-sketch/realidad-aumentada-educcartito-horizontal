@@ -6,6 +6,7 @@
 
   <title>Educcartito STEAMLab RA Horizontal</title>
 
+  <!-- A-Frame + MindAR -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
@@ -13,11 +14,23 @@
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      min-height: 100%;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
       background: #000;
       font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* Fuerza la escena AR a ocupar toda la pantalla del celular */
+    a-scene,
+    a-scene canvas,
+    .a-canvas {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 1 !important;
     }
 
     .a-enter-vr,
@@ -102,7 +115,7 @@
       left: 50%;
       bottom: 24px;
       transform: translateX(-50%);
-      width: min(92vw, 560px);
+      width: min(92vw, 600px);
       padding: 12px 16px;
       border-radius: 18px;
       background: rgba(0,0,0,0.72);
@@ -112,63 +125,80 @@
       text-align: center;
       box-sizing: border-box;
     }
+
+    /*
+      Video como capa HTML.
+      Esta versión evita el problema de “se oye, pero no se ve”,
+      porque NO usa el video como textura de A-Frame.
+    */
+    #capaVideo {
+      position: fixed;
+      z-index: 9996;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(94vw, 760px);
+      display: none;
+      padding: 8px;
+      border-radius: 22px;
+      background: rgba(0,0,0,0.88);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.65);
+      box-sizing: border-box;
+    }
+
+    #videoEduccartito {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      background: black;
+    }
+
+    #etiquetaVideo {
+      color: white;
+      font-size: 14px;
+      line-height: 1.25;
+      text-align: center;
+      padding: 8px 6px 2px 6px;
+    }
   </style>
 
   <script>
     /*
-      VERSIÓN HORIZONTAL SIMPLE Y LIMPIA
+      VERSIÓN ESTABLE HORIZONTAL
 
       Archivos obligatorios:
-      index.html
-      targets.mind
-      educcartito-bailando.mp4
+      - index.html
+      - targets.mind
+      - educcartito-bailando.mp4
 
-      Video horizontal 16:9.
-      Tamaño actual en AR:
-      width="2.20"
-      height="1.24"
-
-      Si se ve demasiado grande:
-      width="1.90"
-      height="1.07"
-
-      Si se ve pequeño:
-      width="2.45"
-      height="1.38"
+      Esta versión usa MindAR solo para reconocer la imagen.
+      Cuando reconoce la tarjeta, muestra el video como capa HTML grande.
+      Es mucho más estable en celulares porque evita fallas de textura WebGL.
     */
 
-    AFRAME.registerComponent("educcartito-ra-horizontal", {
+    AFRAME.registerComponent("detector-educcartito", {
       init: function () {
         const video = document.querySelector("#videoEduccartito");
-        const panelVideo = document.querySelector("#panelVideo");
+        const capaVideo = document.querySelector("#capaVideo");
         const mensaje = document.querySelector("#mensaje");
 
-        const actualizarTextura = () => {
-          panelVideo.setAttribute("material", "shader: flat; src: #videoEduccartito; side: double; transparent: false; opacity: 1;");
-          panelVideo.setAttribute("visible", "true");
-        };
-
-        video.addEventListener("loadeddata", actualizarTextura);
-        video.addEventListener("canplay", actualizarTextura);
-        video.addEventListener("playing", actualizarTextura);
-
         this.el.addEventListener("targetFound", async () => {
-          actualizarTextura();
+          capaVideo.style.display = "block";
           mensaje.innerHTML = "¡Educcartito apareció!<br>Baila, aprende y descubre patrones.";
 
           try {
             video.currentTime = 0;
             video.muted = false;
             await video.play();
-            actualizarTextura();
           } catch (error) {
-            mensaje.innerHTML = "Educcartito apareció.<br>Toca el botón “Activar sonido”.";
+            mensaje.innerHTML = "Educcartito apareció.<br>Toca “Activar sonido” para iniciar el baile.";
           }
         });
 
         this.el.addEventListener("targetLost", () => {
           video.pause();
-          panelVideo.setAttribute("visible", "false");
+          capaVideo.style.display = "none";
           mensaje.innerHTML = "Busca nuevamente la tarjeta de Educcartito.";
         });
       }
@@ -180,15 +210,7 @@
       const botonSonido = document.querySelector("#sonido");
       const mensaje = document.querySelector("#mensaje");
       const video = document.querySelector("#videoEduccartito");
-      const panelVideo = document.querySelector("#panelVideo");
-
-      const actualizarTextura = () => {
-        panelVideo.setAttribute("material", "shader: flat; src: #videoEduccartito; side: double; transparent: false; opacity: 1;");
-      };
-
-      video.addEventListener("error", () => {
-        mensaje.innerHTML = "No se cargó el video.<br>Revisa que el archivo se llame educcartito-bailando.mp4.";
-      });
+      const capaVideo = document.querySelector("#capaVideo");
 
       botonInicio.addEventListener("click", async () => {
         inicio.style.display = "none";
@@ -199,7 +221,6 @@
           video.muted = true;
           video.load();
           await video.play();
-          actualizarTextura();
           video.pause();
           video.currentTime = 0;
           video.muted = false;
@@ -210,13 +231,17 @@
 
       botonSonido.addEventListener("click", async () => {
         try {
+          capaVideo.style.display = "block";
           video.muted = false;
-          actualizarTextura();
           await video.play();
-          mensaje.innerHTML = "Sonido activado.<br>Ahora apunta hacia la tarjeta de Educcartito.";
+          mensaje.innerHTML = "Sonido activado.<br>Apunta hacia la tarjeta de Educcartito.";
         } catch (e) {
           mensaje.innerHTML = "Toca nuevamente el botón o revisa el permiso del navegador.";
         }
+      });
+
+      video.addEventListener("error", () => {
+        mensaje.innerHTML = "No se cargó el video.<br>Revisa que el archivo se llame exactamente educcartito-bailando.mp4.";
       });
     });
   </script>
@@ -237,40 +262,38 @@
 
   <div id="mensaje">Preparando la experiencia de realidad aumentada...</div>
 
+  <!-- Video visible como capa HTML, horizontal y grande -->
+  <div id="capaVideo">
+    <video
+      id="videoEduccartito"
+      src="./educcartito-bailando.mp4"
+      preload="auto"
+      loop
+      muted
+      playsinline
+      webkit-playsinline>
+    </video>
+    <div id="etiquetaVideo">Educcartito STEAMLab en Realidad Aumentada</div>
+  </div>
+
+  <!-- Escena MindAR solo para detectar la imagen marcador -->
   <a-scene
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: yes; uiLoading: yes; uiError: yes;"
-    embedded
     color-space="sRGB"
     renderer="colorManagement: true; physicallyCorrectLights: false; alpha: true; antialias: true;"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false">
 
-    <a-assets timeout="30000">
-      <video
-        id="videoEduccartito"
-        src="./educcartito-bailando.mp4"
-        preload="auto"
-        loop
-        muted
-        playsinline
-        webkit-playsinline>
-      </video>
-    </a-assets>
-
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-entity mindar-image-target="targetIndex: 0" educcartito-ra-horizontal>
-
+    <a-entity mindar-image-target="targetIndex: 0" detector-educcartito>
+      <!-- Objeto invisible. Solo sirve para activar targetFound y targetLost. -->
       <a-plane
-        id="panelVideo"
-        position="0 0 0.13"
-        rotation="0 0 0"
-        width="2.20"
-        height="1.24"
-        visible="false"
-        material="shader: flat; src: #videoEduccartito; side: double; transparent: false; opacity: 1;">
+        position="0 0 0"
+        width="0.01"
+        height="0.01"
+        visible="false">
       </a-plane>
-
     </a-entity>
 
   </a-scene>
